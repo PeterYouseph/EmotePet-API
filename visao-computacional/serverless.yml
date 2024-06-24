@@ -1,26 +1,91 @@
 service: vision
 frameworkVersion: '3'
 
-provider:
+provider: # Provedor de serviços da aplicação (necessário configurar as credenciais da AWS)
   name: aws
   runtime: python3.9
+  iamRoleStatements: # Declarações de política IAM para permitir que as funções Lambda acessem os serviços necessários
+    - Effect: Allow
+      Action:
+        - rekognition:DetectFaces
+        - rekognition:DetectLabels
+      Resource: "*"
+    - Effect: Allow
+      Action:
+        - s3:GetObject
+      Resource: "arn:aws:s3:::*" # Permitir acesso a qualquer bucket S3 (pode ser restringido para um bucket específico)
+    - Effect: Allow
+      Action:
+        - logs:CreateLogGroup
+        - logs:CreateLogStream
+        - logs:PutLogEvents
+      Resource: "arn:aws:logs:*:*:*"
 
-functions:
-  health:
+functions: # Funções Lambda da aplicação
+  health: # Função para verificar a saúde da aplicação
     handler: handler.health
     events:
       - httpApi:
           path: /
           method: get
-  v1Description:
+
+  v1Description: # Função que descreve a imagem usando a API v1
     handler: handler.v1_description
     events:
       - httpApi:
           path: /v1
           method: get
-  v2Description:
+
+  v2Description: # Função que descreve a imagem usando a API v2
     handler: handler.v2_description
     events:
       - httpApi:
           path: /v2
           method: get
+
+  detectFaces: # Função que detecta faces na imagem 
+    handler: handler.detect_faces
+    events:
+      - httpApi:
+          path: /v1/vision
+          method: post
+
+  detectFacesAndPets: # Função que detecta faces e animais de estimação na imagem
+    handler: handler.detect_faces_and_pets
+    events:
+      - httpApi:
+          path: /v2/vision
+          method: post
+
+resources: # Recursos da aplicação 
+  Resources:
+    RekognitionIAMRole: # Função IAM para permitir que a função Lambda acesse o Amazon Rekognition
+      Type: AWS::IAM::Role
+      Properties:
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service: lambda.amazonaws.com
+              Action: sts:AssumeRole
+        Policies: # Políticas para a função IAM (Amazon Rekognition, Amazon S3 e Amazon CloudWatch Logs)
+          - PolicyName: RekognitionPolicy
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - rekognition:DetectFaces
+                    - rekognition:DetectLabels
+                  Resource: "*"
+                - Effect: Allow
+                  Action:
+                    - s3:GetObject
+                  Resource: "arn:aws:s3:::*" # Permitir acesso a qualquer bucket S3 (pode ser restringido para um bucket específico)
+                - Effect: Allow
+                  Action:
+                    - logs:CreateLogGroup
+                    - logs:CreateLogStream
+                    - logs:PutLogEvents
+                  Resource: "arn:aws:logs:*:*:*"
