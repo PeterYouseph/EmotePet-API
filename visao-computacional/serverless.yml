@@ -6,19 +6,23 @@ provider: # Provedor de serviços da aplicação (necessário configurar as cred
   runtime: python3.9
   iamRoleStatements: # Declarações de política IAM para permitir que as funções Lambda acessem os serviços necessários
     - Effect: Allow
-      Action:
+      Action: # Permissões para acessar o Amazon Rekognition
         - rekognition:DetectFaces
         - rekognition:DetectLabels
       Resource: "*"
     - Effect: Allow
-      Action:
+      Action: # Permissões para acessar o Amazon S3
         - s3:GetObject
       Resource: "arn:aws:s3:::*" # Permitir acesso a qualquer bucket S3 (pode ser restringido para um bucket específico)
     - Effect: Allow
-      Action:
+      Action: # Permissões para acessar os logs do CloudWatch 
         - logs:CreateLogGroup
         - logs:CreateLogStream
         - logs:PutLogEvents
+        - logs:DescribeLogGroups
+        - logs:DescribeLogStreams
+        - logs:PutRetentionPolicy
+        - logs:DeleteLogGroup
       Resource: "arn:aws:logs:*:*:*"
 
 functions: # Funções Lambda da aplicação
@@ -84,8 +88,12 @@ resources: # Recursos da aplicação
                     - s3:GetObject
                   Resource: "arn:aws:s3:::*" # Permitir acesso a qualquer bucket S3 (pode ser restringido para um bucket específico)
                 - Effect: Allow
-                  Action:
+                  Action: # Permissões para acessar os logs do CloudWatch
                     - logs:CreateLogGroup
                     - logs:CreateLogStream
                     - logs:PutLogEvents
+                    - logs:DescribeLogGroups
+                    - logs:DescribeLogStreams
+                    - logs:PutRetentionPolicy
+                    - logs:DeleteLogGroup
                   Resource: "arn:aws:logs:*:*:*"
