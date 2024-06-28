@@ -1,6 +1,7 @@
+import json
 from services.rekognition_service import RekognitionService
 from services.s3_service import S3Service
-# services.bedrock_service import BedrockService
+from services.bedrock_service import BedrockService
 from utils.logger import logger, error
 
 class VisionController:
@@ -9,7 +10,7 @@ class VisionController:
         self.image_name = image_name
         self.rekognition_service = RekognitionService()
         self.s3_service = S3Service()
-        # self.bedrock_service = BedrockService()
+        self.bedrock_service = BedrockService()
     
     # Função para processar uma imagem e detectar faces
     def process_image(self):
@@ -100,15 +101,25 @@ class VisionController:
             }]
         return faces
 
-    def _process_pets(self, pet_labels):
-        # Remover duplicatas de rótulos e raças de animais de estimação
-        unique_breeds = {breed['breed']: breed for label in pet_labels for breed in label['breeds']}.values()
-        
-        # Formatar as dicas de animais de estimação para a resposta - TO DO
-        #pet_tips = self.bedrock_service()
-        
-        pets = [{
-            'labels': [{'Confidence': breed['confidence'], 'Name': breed['breed']} for breed in unique_breeds],
-            'Dicas': 'pet_tips'
-        }]
+    def _process_pets(self, pet_labels): # Função para processar os rótulos de animais de estimação
+        pets = []
+        # Filtro de raças sem breeds que não são raças de animais de estimação:
+        filtered_breeds = ['Animal', 'Pet', 'Dog', 'Bird', 'Mammal', 'Vertebrate', 'Canidae','Canine', 'Carnivore', 'Terrestrial animal', 'Dog breed', 'Dog like mammal']
+        unique_breeds = {breed['breed']: breed for label in pet_labels for breed in label['breeds'] if breed['breed'] not in filtered_breeds}.values() # Filtra raças únicas
+        print(f'Raças únicas: {unique_breeds}')
+
+        for breed in unique_breeds: # Para cada raça única, chama o Bedrock para obter dicas e adiciona na lista de pets
+            self.bedrock_service.set_pet_breed(breed['breed'])
+            response = self.bedrock_service.invoke_model()
+            if response['statusCode'] == 200: # Retorna as dicas do Bedrock caso a requisição tenha sido bem sucedida
+                tips = json.loads(response['Dicas'])
+            else:  # Caso contrário, retorna uma mensagem de erro
+                tips = 'Erro ao obter dicas do Bedrock'
+
+            pet_info = {
+                'labels': [{'Confidence': breed['confidence'], 'Name': breed['breed']}],
+                'Dicas': tips
+            }
+            pets.append(pet_info)
+
         return pets
