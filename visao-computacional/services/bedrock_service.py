@@ -60,3 +60,25 @@ class BedrockClass:
             },
         }
         return json.dumps(request_body)
+
+    def invoke_model(self):
+        model_id = "amazon.titan-text-express-v1"
+
+        response = self.bedrock.invoke_model(modelId=model_id, body=self.generate_request_body())
+
+        try:
+            response = self.bedrock.invoke_model(
+                        modelId=model_id, 
+                        contentType='application/json',
+                        body=self.generate_request_body()
+            )
+            
+            model_response = json.loads(response["body"].read().decode('utf-8'))
+
+            response_text = model_response["results"][0]["outputText"]
+
+            return {'statusCode': 200, 'Dicas': json.dumps(response_text, indent=4, ensure_ascii=False)}
+        
+        except ClientError as e:
+            print(f"Error invoking model: {e}")
+            return {'statusCode': 500, 'body': json.dumps(str(e))}    
