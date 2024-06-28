@@ -1,8 +1,28 @@
+import boto3
+import json
+from botocore.exceptions import ClientError
 
-def get_pet_tips(labels):
-    # Obtendo a lista de rótulos detectados na imagem
-    return ("Dicas sobre Labradores: Nível de Energia e Necessidades de Exercícios: Labradores são de médio nível de energia, "
-            "necessitando de 40 minutos de exercício por dia. Temperamento e Comportamento: Inteligentes, enérgicos, dóceis, "
-            "e com forte desejo de trabalhar com pessoas. Cuidados e Necessidades: Pelos curtos que precisam de poucos cuidados, "
-            "mas devem ser penteados uma vez por semana para remover fios mortos e soltos. A alimentação deve ser adequada, ajustando "
-            "a quantidade conforme o peso do cão. Problemas de Saúde Comuns: Displasia do cotovelo e coxofemoral, atrofia progressiva da retina (APR) e catarata hereditária.")
+""""
+Caso for testar o Bedrock veja se está habilitado o modelo no AWS Bedrock (https://us-east-1.console.aws.amazon.com/bedrock/home?region=us-east-1#/modelaccess)
+"""
+
+class BedrockClass:
+    def __init__(self):
+        # Inicia a sessão do Boto3
+        self.session = boto3.Session(region_name='us-east-1')
+
+        # Inicia o serviço Bedrock
+        self.bedrock = boto3.client("bedrock-runtime", region_name="us-east-1")
+
+    def verify_credentials(self):
+        try:
+            sts_client = self.session.client('sts')
+            identity = sts_client.get_caller_identity()
+            print("AWS credentials are valid.")
+            print(f"Account: {identity['Account']}, UserID: {identity['UserId']}, ARN: {identity['Arn']}")
+        
+        except ClientError as e:
+            print(f"Error verifying credentials: {e}")
+            return False
+        return True
+    
