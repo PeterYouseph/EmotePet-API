@@ -14,18 +14,6 @@ class BedrockClass:
         # Inicia o serviço Bedrock
         self.bedrock = boto3.client("bedrock-runtime", region_name="us-east-1")
 
-    def verify_credentials(self):
-        try:
-            sts_client = self.session.client('sts')
-            identity = sts_client.get_caller_identity()
-            print("AWS credentials are valid.")
-            print(f"Account: {identity['Account']}, UserID: {identity['UserId']}, ARN: {identity['Arn']}")
-        
-        except ClientError as e:
-            print(f"Error verifying credentials: {e}")
-            return False
-        return True
-
     def list_models_available(self):
         bedrock_client = boto3.client('bedrock')
         list_models = [models['modelId'] for models in bedrock_client.list_foundation_models()['modelSummaries']]
