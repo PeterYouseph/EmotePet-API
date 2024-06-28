@@ -25,6 +25,11 @@ class BedrockClass:
             print(f"Error verifying credentials: {e}")
             return False
         return True
+
+    def list_models_available(self):
+        bedrock_client = boto3.client('bedrock')
+        list_models = [models['modelId'] for models in bedrock_client.list_foundation_models()['modelSummaries']]
+        return list_models
         
     def set_dog_breed(self, dog_race):
         self.dog_race = dog_race
