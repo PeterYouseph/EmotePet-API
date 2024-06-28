@@ -29,3 +29,17 @@ class BedrockClass:
     def set_dog_breed(self, dog_race):
         self.dog_race = dog_race
         return True
+
+    def create_prompt(self):
+        prompt = f"""
+        Escreva um texto detalhado sobre as características, cuidados e problemas de saúde comuns para a seguinte raça de cachorro: {self.dog_race}.
+
+        Dicas sobre {self.dog_race}: 
+        Nível de Energia e Necessidades de Exercícios: 
+        Temperamento e Comportamento: 
+        Cuidados e Necessidades: 
+        Problemas de Saúde Comuns:
+        Informações Extras:
+        """
+        return prompt
+     
