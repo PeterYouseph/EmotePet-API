@@ -35,8 +35,10 @@ class RekognitionService:
     def detect_pets(self, bucket, image_name):
         labels_response = self.detect_labels(bucket, image_name) # Detecta os rótulos da imagem para identificar animais de estimação
         pets = []
-        pet_types = ['Dog', 'Cat', 'Pet', 'Bird', 'Animal'] # Tipos de animais de estimação a serem considerados
+        pet_types = ['Dog', 'Cat', 'Pet', 'Bird', 'Animal', 'Fish'] # Tipos de animais de estimação a serem considerados
         for label in labels_response['Labels']:
+
+        # Validação se o rótulo é um animal de estimação
             if any(pet in label['Name'] for pet in pet_types): # Verifica se o rótulo é um animal de estimação
                 pet_data = {
                     'type': label['Name'],
@@ -50,6 +52,7 @@ class RekognitionService:
                             'confidence': potential_breed['Confidence']
                         })
                 pets.append(pet_data)
+
         if not pets: # Caso não encontre animais de estimação, retorna um objeto vazio
             pets = [{
                 'type': None,
