@@ -25,7 +25,7 @@ class BedrockClass:
             print(f"Error verifying credentials: {e}")
             return False
         return True
-    
+        
     def set_dog_breed(self, dog_race):
         self.dog_race = dog_race
         return True
@@ -43,3 +43,15 @@ class BedrockClass:
         """
         return prompt
      
+    def generate_request_body(self):
+        # temperature:  aleatoriedade na geração de texto (quanto maior, mais aleatorio e menos conservador o texto é)
+        # topP:  tokens que compõem o top p% da probabilidade cumulativa
+        request_body = {
+            "inputText": self.create_prompt(),
+            "textGenerationConfig": {
+                "maxTokenCount": 1000,
+                "temperature": 0.1, 
+                "topP": 1
+            },
+        }
+        return json.dumps(request_body)
