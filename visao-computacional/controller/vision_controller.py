@@ -1,8 +1,9 @@
 import json
-from services.rekognition_service import detect_faces, detect_labels
+from services.rekognition_service import detect_faces, detect_pets
 from services.s3_service import get_image_metadata, get_signed_url
 from services.bedrock_service import get_pet_tips
 from utils.logger import logger, error
+
 # Função para processar uma imagem e detectar faces
 def process_image(bucket, image_name): 
     try: 
@@ -53,15 +54,13 @@ def process_image(bucket, image_name):
         error(e)
         raise Exception('Internal Server Error')
 
-def process_image_with_pets(bucket, image_name): # Função para processar uma imagem e detectar faces e animais de estimação
+# Função para processar uma imagem e detectar faces e animais de estimação
+def process_image_with_pets(bucket, image_name):
     try:
-        # Detectando rótulos na imagem
-        rekognition_labels = detect_labels(bucket, image_name)
+        # Detectando rótulos na imagem e filtrando animais de estimação
+        pet_labels = detect_pets(bucket, image_name)
         rekognition_faces = detect_faces(bucket, image_name)
-        logger(f'Rekognition data: {rekognition_labels}')
-
-        # Filtrando rótulos para identificar animais de estimação
-        pet_labels = [label for label in rekognition_labels['Labels'] if 'Animal' in label['Categories'][0]['Name'] or 'Pets' in label['Categories'][0]['Name']]
+        logger(f'Rekognition data: {pet_labels}')
 
         # Processando as faces detectadas
         faces = []
@@ -104,11 +103,14 @@ def process_image_with_pets(bucket, image_name): # Função para processar uma i
 
         # Adicionar informações de pets caso tenha detectado algum
         if pet_labels:
-            pet_tips = get_pet_tips(pet_labels)
+            # pet_tips = get_pet_tips(image_url, [label['type'] for label in pet_labels if label['type']])
             response['pets'] = [{
-                'labels': [{'Name': label['Name'], 'Confidence': float(label['Confidence'])} for label in pet_labels],
-                'Dicas': pet_tips
-            }]
+                'labels': [[{'Confidence': label['confidence'],
+                             'Name': label['type']} for label in pet_labels if label['type']],
+                           {'Confidence': breed['confidence'],
+                            'Name': breed['breed']} for label in pet_labels for breed in label['breeds']],
+                'Dicas': 'pet_tips'
+            }] # Formato da resposta com 
         else:
             response['pets'] = []
 
