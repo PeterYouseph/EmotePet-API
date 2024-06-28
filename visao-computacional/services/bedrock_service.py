@@ -26,3 +26,6 @@ class BedrockClass:
             return False
         return True
     
+    def set_dog_breed(self, dog_race):
+        self.dog_race = dog_race
+        return True
