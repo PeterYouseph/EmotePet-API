@@ -1,35 +1,36 @@
 import json
-from controller import vision_controller
+from controller.vision_controller import VisionController
 
-def health(event, context): # Função para verificar a saúde da aplicação 
+def health(event, context): 
+    # Função para verificar a saúde da aplicação 
     body = {
         "message": "Go Serverless v3.0! Your function executed successfully!",
         "input": event,
     }
 
     response = {"statusCode": 200, "body": json.dumps(body)} # Retorna a resposta com o código 200 e a mensagem de sucesso
-
     return response
 
-def v1_description(event, context): # Função para retornar a descrição da API na versão 1
+def v1_description(event, context): 
+    # Função para retornar a descrição da API na versão 1
     body = {
         "message": "VISION api version 1."
     }
 
     response = {"statusCode": 200, "body": json.dumps(body)} # Retorna a resposta com o código 200 e a descrição da API v1
-
     return response
 
-def v2_description(event, context): # Função para retornar a descrição da API na versão 2
+def v2_description(event, context): 
+    # Função para retornar a descrição da API na versão 2
     body = {
         "message": "VISION api version 2."
     }
 
     response = {"statusCode": 200, "body": json.dumps(body)} # Retorna a resposta com o código 200 e a descrição da API v2
-
     return response
 
-def detect_faces(event, context):  # Função para detectar faces em uma imagem no S3 e retornar os detalhes
+def detect_faces(event, context):  
+    # Função para detectar faces em uma imagem no S3 e retornar os detalhes
     if 'body' not in event: # Valida se há um body da requisição
         return {
             'statusCode': 400,
@@ -40,14 +41,15 @@ def detect_faces(event, context):  # Função para detectar faces em uma imagem 
     bucket = body.get('bucket')
     image_name = body.get('imageName')
 
-    if not bucket or not image_name: # Valida se o bucket e o nome da imagem estão presentes
+    if not bucket or not image_name: # Valida se o bucket e o nome da imagem estão presentes no body
         return {
             'statusCode': 400,
             'body': json.dumps({'message': 'bucket and imageName are required'})
         }
 
     try: 
-        response = vision_controller.process_image(bucket, image_name) # Chama a função para processar a imagem com pessoas e detectar faces e emoções
+        vision_controller = VisionController(bucket, image_name)
+        response = vision_controller.process_image() # Chama a função para processar a imagem com pessoas e detectar faces e emoções
         return {
             'statusCode': 200,
             'body': json.dumps(response)
@@ -60,7 +62,8 @@ def detect_faces(event, context):  # Função para detectar faces em uma imagem 
             'body': json.dumps({'message': error_message})
         }
 
-def detect_faces_and_pets(event, context):  # Função para detectar faces e animais de estimação em uma imagem no S3 e retornar os detalhes
+def detect_faces_and_pets(event, context):  
+    # Função para detectar faces e animais de estimação em uma imagem no S3 e retornar os detalhes
     if 'body' not in event: # Valida se há um body da requisição
         return {
             'statusCode': 400,
@@ -71,14 +74,15 @@ def detect_faces_and_pets(event, context):  # Função para detectar faces e ani
     bucket = body.get('bucket')
     image_name = body.get('imageName')
 
-    if not bucket or not image_name: # Valida se o bucket e o nome da imagem estão presentes
+    if not bucket or not image_name: # Valida se o bucket e o nome da imagem estão presentes no body
         return {
             'statusCode': 400,
             'body': json.dumps({'message': 'bucket and imageName are required'})
         }
 
     try: 
-        response = vision_controller.process_image_with_pets(bucket, image_name) # Chama a função para processar a imagem com pessoas e Pets
+        vision_controller = VisionController(bucket, image_name)
+        response = vision_controller.process_image_with_pets() # Chama a função para processar a imagem com pessoas e Pets e detectar faces e emoções
         return {
             'statusCode': 200,
             'body': json.dumps(response)
