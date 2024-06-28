@@ -6,28 +6,23 @@ from botocore.exceptions import ClientError
 Caso for testar o Bedrock veja se está habilitado o modelo no AWS Bedrock (https://us-east-1.console.aws.amazon.com/bedrock/home?region=us-east-1#/modelaccess)
 """
 
-class BedrockClass:
+class BedrockService:
     def __init__(self):
         # Inicia a sessão do Boto3
         self.session = boto3.Session(region_name='us-east-1')
 
         # Inicia o serviço Bedrock
         self.bedrock = boto3.client("bedrock-runtime", region_name="us-east-1")
-
-    def list_models_available(self):
-        bedrock_client = boto3.client('bedrock')
-        list_models = [models['modelId'] for models in bedrock_client.list_foundation_models()['modelSummaries']]
-        return list_models
         
-    def set_dog_breed(self, dog_race):
-        self.dog_race = dog_race
+    def set_pet_breed(self, pet_breed): # Função para definir a raça do animal de estimação
+        self.pet_breed = pet_breed
         return True
 
     def create_prompt(self):
         prompt = f"""
-        Escreva um texto detalhado sobre as características, cuidados e problemas de saúde comuns para a seguinte raça de cachorro: {self.dog_race}.
+        Escreva um texto detalhado sobre as características, cuidados e problemas de saúde comuns para a seguinte raça de Pet: {self.pet_breed}.
 
-        Dicas sobre {self.dog_race}: 
+        Dicas sobre {self.pet_breed}: 
         Nível de Energia e Necessidades de Exercícios: 
         Temperamento e Comportamento: 
         Cuidados e Necessidades: 
@@ -37,14 +32,14 @@ class BedrockClass:
         return prompt
      
     def generate_request_body(self):
-        # temperature:  aleatoriedade na geração de texto (quanto maior, mais aleatorio e menos conservador o texto é)
-        # topP:  tokens que compõem o top p% da probabilidade cumulativa
+       
+        
         request_body = {
             "inputText": self.create_prompt(),
             "textGenerationConfig": {
                 "maxTokenCount": 1000,
-                "temperature": 0.1, 
-                "topP": 1
+                "temperature": 0.1, # temperature:  aleatoriedade na geração de texto (quanto maior, mais aleatorio e menos conservador o texto é)
+                "topP": 1 # topP:  tokens que compõem o top p% da probabilidade cumulativa
             },
         }
         return json.dumps(request_body)
