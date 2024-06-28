@@ -24,6 +24,11 @@ provider: # Provedor de serviços da aplicação (necessário configurar as cred
         - logs:PutRetentionPolicy
         - logs:DeleteLogGroup
       Resource: "arn:aws:logs:*:*:*"
+    - Effect: Allow
+      Action:
+        - bedrock:InvokeModel
+      Resource: "*"
+
 
 functions: # Funções Lambda da aplicação
   health: # Função para verificar a saúde da aplicação
