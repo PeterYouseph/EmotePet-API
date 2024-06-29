@@ -18,6 +18,7 @@ class BedrockService:
         self.pet_breed = pet_breed
         return True
 
+    # Cria um prompt detalhado sobre a raça do animal de estimação
     def create_prompt(self):
         prompt = f"""
         Escreva um texto detalhado sobre as características, cuidados e problemas de saúde comuns para a seguinte raça de Pet: {self.pet_breed}.
@@ -33,7 +34,7 @@ class BedrockService:
      
     def generate_request_body(self):
        
-        
+        # Gera o corpo da requisição para enviar ao modelo, incluindo o prompt e configurações de geração de texto
         request_body = {
             "inputText": self.create_prompt(),
             "textGenerationConfig": {
@@ -50,16 +51,19 @@ class BedrockService:
         response = self.bedrock.invoke_model(modelId=model_id, body=self.generate_request_body())
 
         try:
+            # Invoca o modelo com o corpo da requisição gerado
             response = self.bedrock.invoke_model(
                         modelId=model_id, 
                         contentType='application/json',
                         body=self.generate_request_body()
             )
             
+            # Processa a resposta do modelo
             model_response = json.loads(response["body"].read().decode('utf-8'))
 
             response_text = model_response["results"][0]["outputText"]
 
+            # Retorna a resposta formatada
             return {'statusCode': 200, 'Dicas': json.dumps(response_text, indent=4, ensure_ascii=False)}
         
         except ClientError as e:
