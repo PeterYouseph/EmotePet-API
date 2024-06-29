@@ -16,8 +16,8 @@ class RekognitionService:
             Attributes=['ALL']
         )
         return response
-
-    # Função para detectar rótulos em uma imagem no S3
+ 
+    # Função para detectar rótulos em uma imagem no S3 e retornar os detalhes dos rótulos
     def detect_labels(self, bucket, image_name):
         response = self.rekognition.detect_labels(
             Image={
@@ -31,32 +31,35 @@ class RekognitionService:
         )
         return response
 
-    # Função para detectar animais de estimação e suas raças em uma imagem no S3
+    # Função para identificar características dos animais de estimação na resposta do Rekognition
+    def animal_characteristics(self, rekognition_response):
+        pet_labels = ['Dog', 'Cat', 'Bird', 'Fish', 'Reptile', 'Mammal', 'Pet'] # Lista de rótulos de possíveis animais de estimação
+        animal_characteristics = []
+        for label in rekognition_response["Labels"]: # Para cada rótulo detectado na imagem
+            for parent in label["Parents"]: # Para cada rótulo pai do rótulo atual (se houver)
+                if parent.get("Name") in pet_labels:
+                    animal_characteristics.append(label)
+        return animal_characteristics
+
+    # Função para detectar animais de estimação e suas raças em uma imagem no S3 e retornar os detalhes dos animais de estimação
     def detect_pets(self, bucket, image_name):
-        labels_response = self.detect_labels(bucket, image_name) # Detecta os rótulos da imagem para identificar animais de estimação
-        pets = []
-        pet_types = ['Dog', 'Cat', 'Pet', 'Bird', 'Animal', 'Fish'] # Tipos de animais de estimação a serem considerados
-        for label in labels_response['Labels']:
-
-        # Validação se o rótulo é um animal de estimação
-            if any(pet in label['Name'] for pet in pet_types): # Verifica se o rótulo é um animal de estimação
-                pet_data = {
-                    'type': label['Name'],
-                    'confidence': label['Confidence'],
-                    'breeds': []
-                }
-                for potential_breed in labels_response['Labels']: # Verifica se o rótulo é uma raça de animal de estimação
-                    if any(parent['Name'] in pet_types for parent in potential_breed.get('Parents', [])):
-                        pet_data['breeds'].append({
-                            'breed': potential_breed['Name'],
-                            'confidence': potential_breed['Confidence']
-                        })
-                pets.append(pet_data)
-
-        if not pets: # Caso não encontre animais de estimação, retorna um objeto vazio
-            pets = [{
-                'type': None,
-                'confidence': None,
-                'breeds': []
-            }]
+        labels_response = self.detect_labels(bucket, image_name)
+        animal_characteristics = self.animal_characteristics(labels_response)
+        pets = self.pets_labels_treatment(animal_characteristics)
         return pets
+
+    def pets_labels_treatment(self, animal_characteristics): # Função para tratar os rótulos dos animais de estimação
+        animal_dict = {"pets": []}  # Inicializa um dicionário para armazenar os animais de estimação detectados
+        set_pets = set()  # Inicializa um conjunto para armazenar os nomes dos animais de estimação detectados sem repetição
+
+        for label in animal_characteristics: # Para cada rótulo de animal de estimação detectado
+            if label['Name'] not in set_pets: # Se o nome do animal não foi visto ainda
+                set_pets.add(label['Name'])  # Adiciona o nome do animal ao conjunto de nomes vistos
+                animal_dict["pets"].append({
+                    "labels": [{
+                        "Confidence": label['Confidence'],
+                        "Name": label['Name']
+                    }]
+                })
+
+        return animal_dict
