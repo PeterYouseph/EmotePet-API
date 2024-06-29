@@ -2,6 +2,19 @@
 
 ## 👨‍💻 Projeto desenvolvido por: [Brenno Ostemberg](https://github.com/brenno-ostemberg), [José Pedro Cândido L.P.](https://github.com/PeterYouseph), [Rafael Torres Nantes](https://github.com/rafael-torres-nantes) e [Sarah Baraldi](https://github.com/mbaraldi-sarah).
 
+## Índice
+
+* [📚 Contextualização do projeto](#-contextualização-do-projeto)
+* [🛠️ Tecnologias/Ferramentas utilizadas](#%EF%B8%8F-tecnologiasferramentas-utilizadas)
+* [🖥️ Funcionamento do sistema](#%EF%B8%8F-funcionamento-do-sistema)
+   * [😁 Parte 1 - Emoções](#parte-1---emoções)
+   * [🐶 Parte 2 - Emoções e Pets](#parte-2---emoções-e-pets)
+   * [☁️ Inserindo logs no Cloudwatch](#inserindo-logs-no-cloudwatch)
+   * [🔀 Fluxo da aplicação](#em-resumo-o-fluxo-da-aplicação-se-dá-da-seguinte-forma)
+* [📁 Estrutura do projeto](#-estrutura-do-projeto)
+* [📌 Como executar o projeto](#-como-executar-o-projeto)
+* [🕵️ Dificuldades Encontradas](#-dificuldades-encontradas)
+
 ## 📚 Contextualização do projeto
 
 O projeto tem o objetivo de criar uma API que receba imagens postadas no *AWS S3*, utilize o *Amazon Rekognition* identificar bichos e humanos, utilize o *Amazon Bedrock* para extrair dicas de como cuidar dos pets reconhecidos e grave os *logs* dos resultados utilizando *CloudWatch*.
@@ -27,7 +40,7 @@ O projeto tem o objetivo de criar uma API que receba imagens postadas no *AWS S3
 
 ## 🖥️ Funcionamento do sistema
 
-### Parte 1 - Emoções
+### 😁 Parte 1 - Emoções
 
 Utilizando o *framework* **Serverless**, enviamos um *json* via **POST** à rota `/v1/vision`, onde utilizamos o **Amazon Rekognition** para detectar as faces e emoções. Além disso, são efetuados *logs* referentes a cada solitação no **AWS Cloudwatch**.
 
@@ -150,7 +163,7 @@ response = self.rekognition.detect_labels(
 )
 ```
 
-### Parte 2 - Emoções e Pets
+### 🐶 Parte 2 - Emoções e Pets
 
 De maneira análoga à Parte 1, desenvolvemos o sistema utilizamos o *framework* **Serverless** para enviarmos um *json* via **POST** à rota `/v2/vision`, onde utilizamos o **Amazon Rekognition** para detectar os pets, suas emoções e raças. Além disso, utilizamos o **Amazon Bedrock** para receber **dicas** de cuidados para cada raça dos pets reconhecidos. Por fim, são efetuados *logs* referentes a cada solitação no **AWS Cloudwatch**.
 
@@ -285,7 +298,7 @@ labels_response = self.detect_labels(bucket, image_name)
             pets.append(pet_data)
 ```
 
-### Inserindo logs no Cloudwatch
+### ☁️ Inserindo logs no Cloudwatch
 
 Tanto na Parte 1 quanto na Parte 2, inserimos *logs* no **Cloudwatch**. Os *logs* foram formatados da seguinte maneira:
 
@@ -394,7 +407,7 @@ $ serverless login
 
 <!-- Terminar -->
 
-## 📚 Dificuldades Encontradas
+## 🕵️ Dificuldades Encontradas
 
 ### ⚙ Dificuldades Técnicas
 
