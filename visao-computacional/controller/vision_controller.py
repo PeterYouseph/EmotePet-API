@@ -43,7 +43,6 @@ class VisionController:
             # Detectando rótulos na imagem e filtrando animais de estimação
             pet_labels = self.rekognition_service.detect_pets(self.bucket, self.image_name)
             rekognition_faces = self.rekognition_service.detect_faces(self.bucket, self.image_name)
-            logger(f'Rekognition data: {pet_labels}')
 
             # Processando as faces detectadas
             faces = self._process_faces(rekognition_faces)
@@ -52,20 +51,22 @@ class VisionController:
             metadata = self.s3_service.get_image_metadata(self.bucket, self.image_name)
             image_url = self.s3_service.get_signed_url(self.bucket, self.image_name)
             creation_time = metadata['LastModified'].strftime('%d-%m-%Y %H:%M:%S')
-
+            
             response = {
                 'url_to_image': image_url,
                 'created_image': creation_time,
-                'faces': faces
+                'faces': faces,
+                'pets': pet_labels
             }
 
             # Adicionar informações de pets caso tenha detectado algum
-            if pet_labels:
+            if pet_labels["pets"]:
                 pets = self._process_pets(pet_labels)
                 response['pets'] = pets
-                print(f'Pets encontrados: {pets}')
+                logger(f'Pets encontrados: {pets}')
             else:
                 response['pets'] = []
+                logger(f'Nenhum pet encontrado na imagem')
 
             return response
         # Em caso de erro, loga a exceção e retorna
@@ -88,6 +89,8 @@ class VisionController:
                     "classified_emotion_confidence": float(faceDetail["Emotions"][0]["Confidence"])
                 }
                 faces.append(face)
+            # Gera logs de faces encontradas na imagem
+            logger(f'Faces encontradas: {faces}')
         if not faces:
             faces = [{
                 "position": {
@@ -99,25 +102,28 @@ class VisionController:
                 "classified_emotion": None,
                 "classified_emotion_confidence": None
             }]
+            # Gera logs de faces não encontradas na imagem 
+            logger(f'Nenhuma face encontrada na imagem')
+
         return faces
 
-    def _process_pets(self, pet_labels): # Função para processar os rótulos de animais de estimação
+    def _process_pets(self, pet_labels):
         pets = []
-        # Filtro de raças sem breeds que não são raças de animais de estimação:
         filtered_breeds = ['Animal', 'Pet', 'Dog', 'Bird', 'Mammal', 'Vertebrate', 'Canidae','Canine', 'Carnivore', 'Terrestrial animal', 'Dog breed', 'Dog like mammal']
-        unique_breeds = {breed['breed']: breed for label in pet_labels for breed in label['breeds'] if breed['breed'] not in filtered_breeds}.values() # Filtra raças únicas
-        print(f'Raças únicas: {unique_breeds}')
+        unique_breeds = {breed['Name']: breed for pet in pet_labels["pets"] for breed in pet["labels"] if breed['Name'] not in filtered_breeds}.values()
 
-        for breed in unique_breeds: # Para cada raça única, chama o Bedrock para obter dicas e adiciona na lista de pets
-            self.bedrock_service.set_pet_breed(breed['breed'])
+        logger(f'Raças únicas: {unique_breeds}') # Gera o log das raças únicas detectadas pelo Rekognition
+
+        for breed in unique_breeds: # Para cada raça de animal de estimação detectada pelo Rekognition
+            self.bedrock_service.set_pet_breed(breed['Name'])
             response = self.bedrock_service.invoke_model()
-            if response['statusCode'] == 200: # Retorna as dicas do Bedrock caso a requisição tenha sido bem sucedida
+            if response['statusCode'] == 200:
                 tips = json.loads(response['Dicas'])
-            else:  # Caso contrário, retorna uma mensagem de erro
+            else:
                 tips = 'Erro ao obter dicas do Bedrock'
 
             pet_info = {
-                'labels': [{'Confidence': breed['confidence'], 'Name': breed['breed']}],
+                'labels': [{'Confidence': breed['Confidence'], 'Name': breed['Name']}],
                 'Dicas': tips
             }
             pets.append(pet_info)
