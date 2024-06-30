@@ -21,14 +21,19 @@ class BedrockService:
     # Cria um prompt detalhado sobre a raça do animal de estimação
     def create_prompt(self):
         prompt = f"""
-        Escreva um texto detalhado sobre as características, cuidados e problemas de saúde comuns para a seguinte raça de Pet: {self.pet_breed}.
+        Informações sobre o Pet {self.pet_breed} (máximo 2 linhas, em PT-BR)
 
         Dicas sobre {self.pet_breed}: 
-        Nível de Energia e Necessidades de Exercícios: 
-        Temperamento e Comportamento: 
-        Cuidados e Necessidades: 
-        Problemas de Saúde Comuns:
-        Informações Extras:
+        - Nível de Energia e Necessidades de Exercícios: 
+            Descreva o nível de energia e as necessidades de exercícios deste pet. 
+        - Temperamento e Comportamento: 
+            Explique o temperamento e o comportamento típico deste pet.
+        - Cuidados e Necessidades: 
+            Informe os cuidados e necessidades específicas deste pet.
+        - Problemas de Saúde Comuns: 
+            Liste os problemas de saúde comuns para este pet.
+        - Informações Extras: 
+            Adicione quaisquer informações extras relevantes sobre este pet.
         """
         return prompt
      
@@ -55,6 +60,7 @@ class BedrockService:
             response = self.bedrock.invoke_model(
                         modelId=model_id, 
                         contentType='application/json',
+                        accept="*/*",
                         body=self.generate_request_body()
             )
             
