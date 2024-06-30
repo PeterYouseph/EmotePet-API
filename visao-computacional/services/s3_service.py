@@ -8,10 +8,8 @@ class S3Service:
     def get_image_metadata(self, bucket, image_name):
         metadata = self.s3.head_object(Bucket=bucket, Key=image_name)
         return metadata
-
-    # Função para gerar uma URL para acessar a imagem no S3
+        
+    # Função para gerar uma URL pública para acessar a imagem no S3
     def get_signed_url(self, bucket, image_name):
-        url = self.s3.generate_presigned_url('get_object',
-                                             Params={'Bucket': bucket, 'Key': image_name},
-                                             ExpiresIn=3600)
+        url = f'https://{bucket}.s3.amazonaws.com/{image_name}'
         return url
