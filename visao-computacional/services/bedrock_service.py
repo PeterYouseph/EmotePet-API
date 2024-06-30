@@ -38,7 +38,7 @@ class BedrockService:
         request_body = {
             "inputText": self.create_prompt(),
             "textGenerationConfig": {
-                "maxTokenCount": 1000,
+                "maxTokenCount": 512,
                 "temperature": 0.1, # temperature:  aleatoriedade na geração de texto (quanto maior, mais aleatorio e menos conservador o texto é)
                 "topP": 1 # topP:  tokens que compõem o top p% da probabilidade cumulativa
             },
