@@ -387,7 +387,7 @@ def error(message):
 ### Clone o repositório
 
 ```bash
-$ git clone https://github.com/Compass-pb-aws-2024-MARCO/sprints-6-7-pb-aws-marco.git
+$ git clone https://github.com/Compass-pb-aws-2024-MARCO/sprint-8-pb-aws-marco.git 
 ```
 
 ### Acesse a pasta do projeto no terminal/cmd:
@@ -430,6 +430,17 @@ $ aws configure
 
 ```bash
 $ serverless login
+```
+
+### Acesse a pasta visao-computacional:
+
+```bash
+$ cd visao-computacional
+```
+
+### Execute o seguinte comando para realizar o deploy:
+```bash
+$ serverless deploy
 ```
 
 <!-- Terminar -->
