@@ -403,7 +403,7 @@ def error(message):
 ### Clone o repositório
 
 ```bash
-$ git clone https://github.com/Compass-pb-aws-2024-MARCO/sprints-8-pb-aws-marco.git
+$ git clone https://github.com/Compass-pb-aws-2024-MARCO/sprint-8-pb-aws-marco.git 
 ```
 
 ### Acesse a pasta do projeto no terminal/cmd:
