@@ -31,6 +31,16 @@ def v2_description(event, context):
 
 def detect_faces(event, context):  
     # Função para detectar faces em uma imagem no S3 e retornar os detalhes
+    
+    # Verifica se 'bucket' e 'imageName' estão presentes em event, cria um JSON no campo 'body' com esses dados
+    if ('bucket' in event) and ('imageName' in event): 
+        body = {
+            'bucket': event['bucket'],
+            'imageName': event['imageName']
+        }
+        
+        event['body'] = json.dumps(body)
+        
     if 'body' not in event: # Valida se há um body da requisição
         return {
             'statusCode': 400,
@@ -64,6 +74,16 @@ def detect_faces(event, context):
 
 def detect_faces_and_pets(event, context):  
     # Função para detectar faces e animais de estimação em uma imagem no S3 e retornar os detalhes
+    
+    # Verifica se 'bucket' e 'imageName' estão presentes em event, cria um JSON no campo 'body' com esses dados
+    if ('bucket' in event) and ('imageName' in event): 
+        body = {
+            'bucket': event['bucket'],
+            'imageName': event['imageName']
+        }
+        
+        event['body'] = json.dumps(body)
+        
     if 'body' not in event: # Valida se há um body da requisição
         return {
             'statusCode': 400,
