@@ -1,4 +1,4 @@
-# Desenvolvimento da aplicação [*'EmotePet API'*]
+# Desenvolvimento da aplicação [*"EmotePet API"*]
 
 ## 👨‍💻 Projeto desenvolvido por: [Brenno Ostemberg](https://github.com/brenno-ostemberg), [José Pedro Cândido L.P.](https://github.com/PeterYouseph), [Rafael Torres Nantes](https://github.com/rafael-torres-nantes) e [Sarah Baraldi](https://github.com/mbaraldi-sarah).
 
@@ -13,6 +13,7 @@
    * [🔀 Fluxo da aplicação](#em-resumo-o-fluxo-da-aplicação-se-dá-da-seguinte-forma)
 * [📁 Estrutura do projeto](#-estrutura-do-projeto)
 * [📌 Como executar o projeto](#-como-executar-o-projeto)
+* [🔗 Endpoints](#-endpoints)
 * [🕵️ Dificuldades Encontradas](#%EF%B8%8F-dificuldades-encontradas)
 
 ## 📚 Contextualização do projeto
@@ -42,11 +43,10 @@ O projeto tem o objetivo de criar uma API que receba imagens postadas no *AWS S3
 
 ### 😁 Parte 1 - Emoções
 
-Utilizando o *framework* **Serverless**, enviamos um *json* via **POST** à rota `/v1/vision`, onde utilizamos o **Amazon Rekognition** para detectar as faces e emoções. Além disso, são efetuados *logs* referentes a cada solitação no **AWS Cloudwatch**.
+Utilizando o *framework* **Serverless**, enviamos um *json* via **POST** à rota [`/v1/vision`](https://fbpdfs3097.execute-api.us-east-1.amazonaws.com/v1/vision), onde utilizamos o **Amazon Rekognition** para detectar as faces e emoções. Além disso, são efetuados *logs* referentes a cada solitação no **AWS Cloudwatch**.
 
 #### Exemplo de entrada:
 
-<!-- Terminar -->
 ```json 
 { 
    "bucket": "nomeBucket", 
@@ -54,82 +54,90 @@ Utilizando o *framework* **Serverless**, enviamos um *json* via **POST** à rota
 } 
 ```
 
+Ou
+
+```json 
+{
+   "body": {
+      "bucket": "sprint08-my-photos",
+      "imageName": "Fofos.png"
+   }
+}
+```
+
 #### Exemplos de Saída:
 
 1. Caso haja apenas uma face:
 
-<!-- Terminar -->
 ```json 
-{ 
-   "url_to_image": "https://myphotos/test.jpg", 
-   "created_image": "02-02-2023 17:00:00", 
-   "faces": [ 
-     { 
-      "position": 
-      { 
-       "Height": 0.06333330273628235, 
-       "Left": 0.1718519926071167, 
-       "Top": 0.7366669774055481, 
-       "Width": 0.11061699688434601 
-      } 
-      "classified_emotion": "HAPPY", 
-      "classified_emotion_confidence": 99.92965151369571686 
-     } 
-   ] 
-} 
+{
+   "url_to_image": "https://sprint08-my-photos.s3.amazonaws.com/FaceOne.jpg", 
+   "created_image": "02-07-2024 00:51:03", 
+   "faces": [
+      {
+         "position": {
+            "Height": 0.2435552030801773, 
+            "Left": 0.6044005751609802, 
+            "Top": 0.15545067191123962, 
+            "Width": 0.17254146933555603
+         }, 
+         "classified_emotion": "HAPPY", 
+         "classified_emotion_confidence": 100.0
+      }
+   ]
+}
 ```
 
 2. Caso haja mais de uma face, o elemento *"faces": [{...}]* recebe mais de um objeto:
 
-<!-- Terminar -->
 ```json
-"faces": [ 
-     { 
-      "position": 
-      { 
-       "Height": 0.06333330273628235, 
-       "Left": 0.1718519926071167, 
-       "Top": 0.7366669774055481, 
-       "Width": 0.11061699688434601 
-      } 
-      "classified_emotion": "HAPPY", 
-      "classified_emotion_confidence": 99.92965151369571686 
-     },
-     { 
-      "position": 
-      { 
-       "Height": 0.08333330273628235, 
-       "Left": 0.3718519926071167, 
-       "Top": 0.6366669774055481, 
-       "Width": 0.21061699688434601 
-      } 
-      "classified_emotion": "HAPPY", 
-      "classified_emotion_confidence": 98.92965151369571686 
-     }
+{
+   "url_to_image": "https://sprint08-my-photos.s3.amazonaws.com/Faces_1.jpg", 
+   "created_image": "02-07-2024 00:51:05", 
+   "faces": [
+      {
+         "position": {
+            "Height": 0.7969402074813843, 
+            "Left": 0.1317732036113739, 
+            "Top": 0.06133376806974411, 
+            "Width": 0.3078056275844574
+         }, 
+         "classified_emotion": "HAPPY", 
+         "classified_emotion_confidence": 100.0
+      }, 
+      {
+         "position": {
+            "Height": 0.7686970233917236, 
+            "Left": 0.5813419818878174, 
+            "Top": 0.0527547188103199, 
+            "Width": 0.3050912320613861
+         }, 
+         "classified_emotion": "CALM", 
+         "classified_emotion_confidence": 93.5546875
+      }
    ]
+}
 ```
 
-3. Caso **NÃO** haja faces, os elementos contidos em *"faces": [{...}]* recebem valor *NULL*:
+3. Caso **NÃO** haja faces, os elementos contidos em *"faces": [{...}]* recebem valor *None*:
 
-<!-- Terminar -->
 ```json 
-{ 
-   "url_to_image": "https://myphotos/test.jpg", 
-   "created_image": "02-02-2023 17:00:00", 
-   "faces": [ 
-     { 
-      "position": 
-      { 
-       "Height": Null, 
-       "Left": Null, 
-       "Top": Null, 
-       "Width": Null 
-      } 
-      "classified_emotion": Null, 
-      "classified_emotion_confidence": Null 
-     } 
-] 
-} 
+{
+   "url_to_image": "https://sprint08-my-photos.s3.amazonaws.com/Bola.jpg", 
+   "created_image": "02-07-2024 00:54:10", 
+   "faces": [
+      {
+         "position": {
+            "Height": None, 
+            "Left": None, 
+            "Top": None, 
+            "Width": None
+         }, 
+         "classified_emotion": None, 
+         "classified_emotion_confidence": None
+      }
+   ]
+}
 ``` 
 
 #### Detectando elementos:
@@ -139,12 +147,12 @@ Utilizando o *framework* **Serverless**, enviamos um *json* via **POST** à rota
 ```py
 response = self.rekognition.detect_faces(
    Image={
-      'S3Object': {
-         'Bucket': bucket,
-         'Name': image_name
+      "S3Object": {
+         "Bucket": bucket,
+         "Name": image_name
       }
    },
-   Attributes=['ALL']
+   Attributes=["ALL"]
 )
 ```
 
@@ -153,9 +161,9 @@ response = self.rekognition.detect_faces(
 ```py
 response = self.rekognition.detect_labels(
    Image={
-      'S3Object': {
-         'Bucket': bucket,
-         'Name': image_name
+      "S3Object": {
+         "Bucket": bucket,
+         "Name": image_name
       }
    },
    MaxLabels=10,
@@ -165,107 +173,115 @@ response = self.rekognition.detect_labels(
 
 ### 🐶 Parte 2 - Emoções e Pets
 
-De maneira análoga à Parte 1, desenvolvemos o sistema utilizamos o *framework* **Serverless** para enviarmos um *json* via **POST** à rota `/v2/vision`, onde utilizamos o **Amazon Rekognition** para detectar os pets, suas emoções e raças. Além disso, utilizamos o **Amazon Bedrock** para receber **dicas** de cuidados para cada raça dos pets reconhecidos. Por fim, são efetuados *logs* referentes a cada solitação no **AWS Cloudwatch**.
+De maneira análoga à Parte 1, desenvolvemos o sistema utilizamos o *framework* **Serverless** para enviarmos um *json* via **POST** à rota [`/v2/vision`](https://fbpdfs3097.execute-api.us-east-1.amazonaws.com/v2/vision), onde utilizamos o **Amazon Rekognition** para detectar os pets, suas emoções e raças. Além disso, utilizamos o **Amazon Bedrock** para receber **dicas** de cuidados para cada raça dos pets reconhecidos. Por fim, são efetuados *logs* referentes a cada solitação no **AWS Cloudwatch**.
 
 #### Exemplo de entrada:
 
-<!-- Terminar -->
 ```json 
-{ 
-   "bucket": "nomeBucket", 
-   "imageName": "nomeFoto.jpg" 
-} 
+{
+   "bucket": "sprint08-my-photos", 
+   "imageName": "Fofos.png"
+}
+```
+
+Ou
+
+```json 
+{
+   "body": {
+      "bucket": "sprint08-my-photos",
+      "imageName": "Fofos.png"
+   }
+}
 ```
 
 #### Exemplos de Saída:
 
-<!-- Terminar -->
 1. Caso haja **apenas um pet**:
 
 ```json 
-{  
-   "url_to_image": "https://mycatphotos/cat.jpg",  
-   "created_image": "02-02-2023 17:00:00",  
+{
+   "url_to_image": "https://sprint08-my-photos.s3.amazonaws.com/Fofos.png",
+   "created_image": "01-07-2024 01:25:36", 
+   "faces": [
+      {
+         "position":
+         {
+            "Height": null, 
+            "Left": null, 
+            "Top": null, 
+            "Width": null
+         }, 
+         "classified_emotion": null, 
+         "classified_emotion_confidence": null
+      }
+   ], 
    "pets": [
       {
-      "labels": [  
-      {  
-         "Confidence": 96.59198760986328,  
-         "Name": "Animal"  
-      },  
-      {  
-         "Confidence": 96.59198760986328,  
-         "Name": "Dog"  
-      },  
-      {  
-         "Confidence": 96.59198760986328,  
-         "Name": "Pet"  
-      },  
-      {  
-         "Confidence": 96.59198760986328,  
-         "Name": "Labrador"  
-      }  
-      ]  
-      "Dicas:": " 
-      Dicas sobre Labradores: 
-      Nível de Energia e Necessidades de Exercícios: Labradores são de médio nível de energia, necessitando de 40 minutos de exercício por dia. 
-      Temperamento e Comportamento: Inteligentes, enérgicos, dóceis, e com forte desejo de trabalhar com pessoas. 
-      Cuidados e Necessidades: Pelos curtos que precisam de poucos cuidados, mas devem ser penteados uma vez por semana para remover fios mortos e soltos. A alimentação deve ser adequada, ajustando a quantidade conforme o peso do cão. 
-      Problemas de Saúde Comuns: Displasia do cotovelo e coxofemoral, atrofia progressiva da retina (APR) e catarata hereditária. 
-      " 
+         "labels": [
+            {
+               "Confidence": 98.87677001953125, 
+               "Name": "Puppy"
+            }
+         ], 
+         "Dicas": "O Puppy é um pet inteligente e alegre que gosta de jogar e ser socializado. Ele tem um nível de energia alto e necessita de atividade regular para mantê-lo saudável. O temperamento de Puppy é amigável e carinhoso, ele é facilmente trainado e pode ser adaptado a diferentes ambientes. Os cuidados de Puppy incluem alimentação balanceada, higiene regular, exames regulares com o veterinário, vacina"
       }
    ]
-} 
+}
 ```
 
 2. Caso haja **uma pessoa e um pet**, retorna uma resposta como à da Parte 1, e também informações de pet, como no exemplo anterior:
 
-<!-- Terminar -->
 ```json
-{ 
-   "url_to_image": "https://myphotos/test.jpg", 
-   "created_image": "02-02-2023 17:00:00", 
-   "faces": [ 
-     { 
-      "position": 
-      { 
-       "Height": 0.06333330273628235, 
-       "Left": 0.1718519926071167, 
-       "Top": 0.7366669774055481, 
-       "Width": 0.11061699688434601 
-      } 
-      "classified_emotion": "HAPPY", 
-      "classified_emotion_confidence": 99.92965151369571686 
-     } 
-   ],
+{
+   "url_to_image": "https://sprint08-my-photos.s3.amazonaws.com/Faces_And_Dog.jpg",
+   "created_image": "02-07-2024 00:51:03", 
+   "faces": [
+      {
+         "position": {
+            "Height": 0.2435552030801773, 
+            "Left": 0.6044005751609802, 
+            "Top": 0.15545067191123962, 
+            "Width": 0.17254146933555603
+         }, 
+         "classified_emotion": "HAPPY", 
+         "classified_emotion_confidence": 100.0
+      }
+   ], 
    "pets": [
       {
-      "labels": [  
-      {  
-         "Confidence": 96.59198760986328,  
-         "Name": "Animal"  
-      },  
-      {  
-         "Confidence": 96.59198760986328,  
-         "Name": "Dog"  
-      },  
-      {  
-         "Confidence": 96.59198760986328,  
-         "Name": "Pet"  
-      },  
-      {  
-         "Confidence": 96.59198760986328,  
-         "Name": "Labrador"  
-      }  
-      ]  
-      "Dicas:": " 
-      Dicas sobre Labradores: 
-      Nível de Energia e Necessidades de Exercícios: Labradores são de médio nível de energia, necessitando de 40 minutos de exercício por dia. 
-      Temperamento e Comportamento: Inteligentes, enérgicos, dóceis, e com forte desejo de trabalhar com pessoas. 
-      Cuidados e Necessidades: Pelos curtos que precisam de poucos cuidados, mas devem ser penteados uma vez por semana para remover fios mortos e soltos. A alimentação deve ser adequada, ajustando a quantidade conforme o peso do cão. 
-      Problemas de Saúde Comuns: Displasia do cotovelo e coxofemoral, atrofia progressiva da retina (APR) e catarata hereditária. 
-      " 
+         "labels": [
+            {
+               "Confidence": 99.94889831542969, 
+               "Name": "Golden Retriever"
+            }
+         ], 
+         "Dicas": "\nDicas sobre Golden Retriever: \n\n- Nível de Energia e Necessidades de Exercícios: \n    O Golden Retriever é um pet bastante ativo e necessita de exercícios regulares para mantê-lo saudável e feliz. Sua energia é alta e gosta de jogar e brincar, por isso é recomendado que ele se exercite regularmente durante aproximadamente 1 a 2 horas diariamente. \n\n- Temperamento e Comportamento"
       }
+   ]
+}
+```
+
+3. Caso **NÃO** haja pets (nem faces), os elementos contidos em *"faces": [{...}]* recebem valor *None* e o objeto *pets:[...]* fica vazio:
+
+```json 
+{
+   "url_to_image": "https://sprint08-my-photos.s3.amazonaws.com/Bola.jpg", 
+   "created_image": "02-07-2024 00:54:10", 
+   "faces": [
+      {
+         "position": {
+            "Height": None, 
+            "Left": None, 
+            "Top": None, 
+            "Width": None
+         }, 
+         "classified_emotion": None, 
+         "classified_emotion_confidence": None
+      }
+   ], 
+   "pets": [
+
    ]
 }
 ```
@@ -287,7 +303,7 @@ def detect_pets(self, bucket, image_name):
 ```py
 def animal_characteristics(self, rekognition_response):
    # Lista de rótulos de possíveis animais de estimação
-   pet_labels = ['Dog', 'Cat', 'Bird', 'Fish', 'Reptile', 'Mammal', 'Pet']
+   pet_labels = ["Dog", "Cat", "Bird", "Fish", "Reptile", "Mammal", "Pet"]
    animal_characteristics = []
    for label in rekognition_response["Labels"]:
       for parent in label["Parents"]:
@@ -301,24 +317,24 @@ def animal_characteristics(self, rekognition_response):
 ```py
 def _process_pets(self, pet_labels):
    pets = []
-   filtered_breeds = ['Animal', 'Pet', 'Dog', 'Bird', 'Mammal', 'Vertebrate', 'Canidae','Canine', 'Carnivore', 'Terrestrial animal', 'Dog breed', 'Dog like mammal']
-   unique_breeds = {breed['Name']: breed for pet in pet_labels["pets"] for breed in pet["labels"] if breed['Name'] not in filtered_breeds}.values()
+   filtered_breeds = ["Animal", "Pet", "Dog", "Bird", "Mammal", "Vertebrate", "Canidae","Canine", "Carnivore", "Terrestrial animal", "Dog breed", "Dog like mammal"]
+   unique_breeds = {breed["Name"]: breed for pet in pet_labels["pets"] for breed in pet["labels"] if breed["Name"] not in filtered_breeds}.values()
 
    # Gera o log das raças únicas detectadas pelo Rekognition
-   logger(f'Raças únicas: {unique_breeds}')
+   logger(f"Raças únicas: {unique_breeds}")
 
    # Para cada raça de animal de estimação detectada pelo Rekognition
    for breed in unique_breeds:
-      self.bedrock_service.set_pet_breed(breed['Name'])
+      self.bedrock_service.set_pet_breed(breed["Name"])
       response = self.bedrock_service.invoke_model()
-      if response['statusCode'] == 200:
-            tips = json.loads(response['Dicas'])
+      if response["statusCode"] == 200:
+            tips = json.loads(response["Dicas"])
       else:
-            tips = 'Erro ao obter dicas do Bedrock'
+            tips = "Erro ao obter dicas do Bedrock"
 
       pet_info = {
-            'labels': [{'Confidence': breed['Confidence'], 'Name': breed['Name']}],
-            'Dicas': tips
+            "labels": [{"Confidence": breed["Confidence"], "Name": breed["Name"]}],
+            "Dicas": tips
       }
       pets.append(pet_info)
 
@@ -331,12 +347,12 @@ Tanto na Parte 1 quanto na Parte 2, inserimos *logs* no **Cloudwatch**. Os *logs
 
 ```py
 log_event = {
-   'logGroupName': log_group_name,
-   'logStreamName': log_stream_name,
-   'logEvents': [
+   "logGroupName": log_group_name,
+   "logStreamName": log_stream_name,
+   "logEvents": [
       {
-         'timestamp': int(datetime.datetime.now().timestamp() * 1000),
-         'message': json.dumps(message)
+         "timestamp": int(datetime.datetime.now().timestamp() * 1000),
+         "message": json.dumps(message)
       }
    ]
 }
@@ -349,7 +365,7 @@ Criamos duas classificações de *logs*.
 ```py
 def logger(message):
     print(message)
-    logger_instance.log_message('rekognition-logs', 'vision-logs', message)
+    logger_instance.log_message("rekognition-logs", "vision-logs", message)
 ```
 
 2. Quando houver algum erro:
@@ -357,7 +373,7 @@ def logger(message):
 ```py
 def error(message):
     print(message)
-    logger_instance.log_message('rekognition-logs', 'vision-errors', message)
+    logger_instance.log_message("rekognition-logs", "vision-errors", message)
 ```
 
 ### Em resumo, o fluxo da aplicação se dá da seguinte forma:
@@ -387,7 +403,7 @@ def error(message):
 ### Clone o repositório
 
 ```bash
-$ git clone https://github.com/Compass-pb-aws-2024-MARCO/sprints-6-7-pb-aws-marco.git
+$ git clone https://github.com/Compass-pb-aws-2024-MARCO/sprints-8-pb-aws-marco.git
 ```
 
 ### Acesse a pasta do projeto no terminal/cmd:
@@ -432,13 +448,37 @@ $ aws configure
 $ serverless login
 ```
 
-<!-- Terminar -->
+### Acesse a pasta visao-computacional:
+
+```bash
+$ cd visao-computacional
+```
+
+### Execute o seguinte comando para realizar o deploy:
+```bash
+$ serverless deploy
+```
+
+## 🔗 Links de Teste
+
+### Endpoints:
+
+🔸 **GET** - https://fbpdfs3097.execute-api.us-east-1.amazonaws.com/
+
+🔸 **GET** - https://fbpdfs3097.execute-api.us-east-1.amazonaws.com/v1
+
+🔸 **GET** - https://fbpdfs3097.execute-api.us-east-1.amazonaws.com/v2
+
+🔹 **POST** - https://fbpdfs3097.execute-api.us-east-1.amazonaws.com/v1/vision
+
+🔹 **POST** - https://fbpdfs3097.execute-api.us-east-1.amazonaws.com/v2/vision
+
 
 ## 🕵️ Dificuldades Encontradas
 
 ### ⚙ Dificuldades Técnicas
 
-O Rekognition retorna diversos dados, incluindo informações que **não eram necessárias** para nosso uso, referidas como "raças genéricas". Conseguimos solucionar o problema [aplicando filtros](#detectando-elementos-1) aos dados. No entanto, essa solução só foi alcançada após a análise de vários exemplos de retorno e uma **extensa** pesquisa na documentação do Rekognition sobre o tópico, especialmente na [API Vision V2 (Emoções + Pets)](#parte-2---emoções-e-pets).
+O Rekognition retorna diversos dados, incluindo informações que **não eram necessárias** para nosso uso, referidas como "raças genéricas". Conseguimos solucionar o problema [aplicando filtros](#detectando-elementos-1) aos dados. No entanto, essa solução só foi alcançada após a análise de vários exemplos de retorno e uma **extensa** pesquisa na documentação do Rekognition sobre o tópico, especialmente na [API Vision V2 (Emoções + Pets)](#-parte-2---emoções-e-pets).
 
 Outra dificuldade que enfrentamos foi o **timeout** ao configurarmos o *Bedrock*. O API Gateway possui um limite de 30 segundos para requisições HTTP, enquanto o *Bedrock* levava quase **5 minutos** para retornar os dados, mesmo para apenas um pet. Resolvemos esse problema realizando algumas modificações no código, ajustando os atributos **maxTokenCount**, **temperature** e **topP** no arquivo `bedrock_services.py`.
 
