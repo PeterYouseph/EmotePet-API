@@ -463,15 +463,15 @@ $ serverless deploy
 
 ### Endpoints:
 
-🔸 **GET** - https://fbpdfs3097.execute-api.us-east-1.amazonaws.com/
+🔸 **GET** - https://qo1bqt78bg.execute-api.us-east-1.amazonaws.com/
 
-🔸 **GET** - https://fbpdfs3097.execute-api.us-east-1.amazonaws.com/v1
+🔸 **GET** - https://qo1bqt78bg.execute-api.us-east-1.amazonaws.com/v1
 
-🔸 **GET** - https://fbpdfs3097.execute-api.us-east-1.amazonaws.com/v2
+🔸 **GET** - https://qo1bqt78bg.execute-api.us-east-1.amazonaws.com/v2
 
-🔹 **POST** - https://fbpdfs3097.execute-api.us-east-1.amazonaws.com/v1/vision
+🔹 **POST** - https://qo1bqt78bg.execute-api.us-east-1.amazonaws.com/v1/vision
 
-🔹 **POST** - https://fbpdfs3097.execute-api.us-east-1.amazonaws.com/v2/vision
+🔹 **POST** - https://qo1bqt78bg.execute-api.us-east-1.amazonaws.com/v2/vision
 
 
 ## 🕵️ Dificuldades Encontradas
